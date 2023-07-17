@@ -3,12 +3,15 @@ import { StyleSheet, Text, View, ImageBackground, SafeAreaView } from 'react-nat
 import  StartGameScreen from "./src/screen/StartGameScreen";
 import { LinearGradient } from 'expo-linear-gradient';
 import BGImage from "./assets/background.png"
-import { useState } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import GameScreen from './src/screen/GameScreen';
 import GameOverScreen from './src/screen/GameOverScreen';
 import Colors from './src/Colors';
 import {  useMemo } from 'react';
 import {useFonts} from "expo-font";
+import * as SplashScreen from 'expo-splash-screen';
+
+SplashScreen.preventAutoHideAsync();
 
 export default function App() {
   const [userNumber, setUserNumber ] = useState(null);
@@ -27,9 +30,17 @@ export default function App() {
     setGuessRounds(0);
   }
   const [fontsLoaded] = useFonts({
-    'open-sans':require('./assets/fonts/OpenSans-Regular.ttf'),
+    'open-sans-regular':require('./assets/fonts/OpenSans-Regular.ttf'),
     'open-sans-bold':require('./assets/fonts/OpenSans-Bold.ttf')
-  })
+  });
+  useEffect(() => {
+    async function hideSplashScreen() {
+      await SplashScreen.hideAsync()
+    }
+    if (fontsLoaded) {
+      hideSplashScreen();
+    }
+  }, [fontsLoaded])
   const Screen = useMemo(()=>{
     if(!userNumber){
       return <StartGameScreen onConfirm={handlePickedNumber}/>
@@ -39,11 +50,13 @@ export default function App() {
      }
      return <GameOverScreen userNumber={userNumber} roundsNumber={guessRound} onStartNewGame={StartNewGame} />
   }
-  ,[userNumber,isGameOver])
+  ,[userNumber,isGameOver]);
+
   if(!fontsLoaded){
     return null
   }
-  return (
+  return (<>
+    <StatusBar style="lightq" />
     <LinearGradient colors={[Colors.primary700,Colors.accent500]} style={styles.container}>
       <ImageBackground 
         source={BGImage} 
@@ -53,12 +66,12 @@ export default function App() {
       >
         
         <SafeAreaView style={styles.container}>
-          <StatusBar style="auto" />
+         
           {Screen}          
           </SafeAreaView>
       </ImageBackground>
     </LinearGradient>
-  );
+  </>);
 }
 
 const styles = StyleSheet.create({

@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from "react";
-import { TextInput, View, StyleSheet, Alert, Text } from "react-native";
+import { TextInput, View, StyleSheet, Alert, Text, useWindowDimensions,ScrollView ,KeyboardAvoidingView} from "react-native";
 import PrimaryButton from "../components/PrimaryButton";
 import Colors from "../Colors";
 import Title from "../components/Title";
@@ -8,6 +8,8 @@ import Subtitle from "../components/Subtitle";
 
 export default function StartGameScreen({onConfirm}){
     const [enteredNumber,setEnteredNumber] = useState('');
+    const {width,height} = useWindowDimensions();
+
     function handleConfirmInput(){
         const confirmdNumber = parseInt(enteredNumber);
         if(isNaN(confirmdNumber) || confirmdNumber <=0 || confirmdNumber>99){
@@ -22,8 +24,11 @@ export default function StartGameScreen({onConfirm}){
         }
         onConfirm(confirmdNumber)
     }
+    const marginTopDistance = height<400?30:100;
 
-    return <View style={styles.root}>
+    return <ScrollView style={styles.screen}>
+        <KeyboardAvoidingView behavior="position">
+        <View style={[styles.root,{marginTop:marginTopDistance}]}>
         <Title>
             Guess my number
         </Title>
@@ -56,10 +61,16 @@ export default function StartGameScreen({onConfirm}){
             </View>
         </Card>
     </View>
+    </KeyboardAvoidingView>
+    </ScrollView>
 }
 
 
+
 const styles = StyleSheet.create({
+    screen:{
+        flex:1
+    },
     root:{
         flex:1,
         marginTop:100,
